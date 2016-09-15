@@ -133,7 +133,7 @@ public class MiscUtils {
     final int R = 6371;// Radius of the earth
 
     Double dLat = Math.toRadians(lat2 - lat1);
-    Double dLon = Math.toRadians(lng2 - lng1);
+    Dougble dLon = Math.toRadians(lng2 - lng1);
     double sinLatDist = Math.sin(dLat / 2);
     double cosLat1 = Math.cos(Math.toRadians(lat1));
     double cosLat2 = Math.cos(Math.toRadians(lat2));
