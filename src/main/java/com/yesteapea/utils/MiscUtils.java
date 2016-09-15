@@ -8,16 +8,23 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Logger;
 import com.google.common.collect.Lists;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.LineIterator;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 
 /**
  * Misc java utils.
  */
 public class MiscUtils {
+  private static final Logger LOG = Logger.getLogger(MiscUtils.class.getName());
+
 
   /**
    * Returns if a set has any commom elements with a collection
@@ -105,7 +112,9 @@ public class MiscUtils {
   }
 
 
-  /**Returns an iterator over the lines of a file from a filepath*/
+  /**
+   * Returns an iterator over the lines of a file from a filepath
+   */
   public static LineIterator lineIterator(String filepath) throws IOException {
     return IOUtils.lineIterator(FileUtils.openInputStream(new File(filepath)), Charset.defaultCharset().name());
   }
@@ -143,4 +152,100 @@ public class MiscUtils {
     Double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     return R * c * 1000;// convert to meters
   }
+
+  /**
+   * Get current working directory
+   */
+  public static String getWorkDir() {
+    String workDir = System.getProperty("user.dir");
+    if (workDir.charAt(workDir.length() - 1) != '/') {
+      workDir += "/";
+    }
+    return workDir;
+  }
+
+  /**
+   * Get home directory
+   */
+  public static String getHomeDir() {
+    return System.getProperty("user.home");
+  }
+
+  public static String expandHomeDir(String inp) {
+    return inp.replaceAll("^~", getHomeDir());
+  }
+
+
+  public static Long safeParseLong(String number, long fallback) {
+    try {
+      return Long.parseLong(number);
+    } catch (Exception e) {
+      LOG.finest(ExceptionUtils.getStackTrace(e));
+      return fallback;
+    }
+  }
+
+  public static Integer safeParseInt(String number, int fallback) {
+    try {
+      return Integer.parseInt(number);
+    } catch (Exception e) {
+      LOG.finest(ExceptionUtils.getStackTrace(e));
+      return fallback;
+    }
+  }
+
+  public static Double safeParseDouble(String number, double fallback) {
+    try {
+      return Double.parseDouble(number);
+    } catch (Exception e) {
+      LOG.finest(ExceptionUtils.getStackTrace(e));
+      return fallback;
+    }
+  }
+
+  public static Float safeParseFloat(String number, float fallback) {
+    try {
+      return Float.parseFloat(number);
+    } catch (Exception e) {
+      LOG.finest(ExceptionUtils.getStackTrace(e));
+      return fallback;
+    }
+  }
+
+  /**
+   * <code>DateTimeFormat</code> does not have a good toString method.
+   * Once a date pattern is created, the pattern string is lost.
+   * This object wraps around the pattern and DateTimeFormat
+   * http://stackoverflow.com/questions/10490951/pattern-string-from-a-joda-time-datetimeformatter
+   */
+  public static class DfAndPattern {
+    private final String pattern;
+    /**
+     * Use this object for any operations on formatter.
+     * The most common operations {@link #print} and {@link #parseDateTime} are
+     * added to wrapper object
+     */
+    public final DateTimeFormatter formatter;
+
+    public DfAndPattern(String pattern) {
+      this.pattern = pattern;
+      formatter = DateTimeFormat.forPattern(pattern);
+    }
+
+    @Override
+    public String toString() {
+      return pattern;
+    }
+
+    /*Wraps joda DateTimeFormatter's print */
+    public String print(DateTime dateTime) {
+      return formatter.print(dateTime);
+    }
+
+    /*Wraps joda DateTimeFormatter's parseDateTime */
+    public DateTime parseDateTime(String dateString) {
+      return formatter.parseDateTime(dateString);
+    }
+  }
+
 }
