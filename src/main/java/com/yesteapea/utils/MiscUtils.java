@@ -237,12 +237,12 @@ public class MiscUtils {
       return pattern;
     }
 
-    /*Wraps joda DateTimeFormatter's print */
+    /**Wraps joda DateTimeFormatter's print */
     public String print(DateTime dateTime) {
       return formatter.print(dateTime);
     }
 
-    /*Wraps joda DateTimeFormatter's parseDateTime */
+    /**Wraps joda DateTimeFormatter's parseDateTime */
     public DateTime parseDateTime(String dateString) {
       return formatter.parseDateTime(dateString);
     }
